@@ -9,7 +9,7 @@ from config import BOT_TOKEN
 
 # लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO)
-
+BOT_TOKEN = ""
 # बॉट और डिस्पैचर इनिशियलाइज़ करें
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
