@@ -43,7 +43,7 @@ async def handle_photo(message: types.Message):
         await message.answer(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="Markdown")
 
 # स्टार्ट कमांड
-@dp.message(commands=["start"])
+@dp.message(command("start"))
 async def start_command(message: types.Message):
     await message.answer("👋 नमस्ते! मैं एक OCR बॉट हूँ। कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
 
