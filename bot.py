@@ -3,7 +3,7 @@ import os
 import logging
 import asyncio
 import pytesseract
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 from PIL import Image
 from fastapi import FastAPI
@@ -49,7 +49,7 @@ async def handle_photo(client, message: Message):
     except Exception as e:
         logging.warning(f"फ़ाइल डिलीट करने में त्रुटि: {e}")
 
-    await message.reply_text(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="markdown")
+    await message.reply_text(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode=enums.ParseMode.HTML)
 
 # ✅ स्टार्ट कमांड
 @bot.on_message(filters.command("start"))
