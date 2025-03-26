@@ -1,20 +1,21 @@
+#@Safaridev
 import logging
+import asyncio
 import pytesseract
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ContentType
-from aiogram.utils import executor
 from PIL import Image
 import os
-#from config import BOT_TOKEN
+BOT_TOKEN = "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q"
 
 # लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO)
-BOT_TOKEN = "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q"
+
 # बॉट और डिस्पैचर इनिशियलाइज़ करें
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
-# फोटो को प्रोसेस करके टेक्स्ट निकालने का फ़ंक्शन
+# फोटो से टेक्स्ट निकालने का फ़ंक्शन
 async def extract_text_from_image(image_path):
     try:
         img = Image.open(image_path)
@@ -24,27 +25,31 @@ async def extract_text_from_image(image_path):
         return f"त्रुटि हुई: {str(e)}"
 
 # जब यूजर फोटो भेजे
-@dp.message_handler(content_types=ContentType.PHOTO)
+@dp.message()
 async def handle_photo(message: types.Message):
-    file_id = message.photo[-1].file_id  # सबसे बड़ी क्वालिटी की इमेज लें
-    file_info = await bot.get_file(file_id)
-    file_path = file_info.file_path
-    downloaded_file = await bot.download_file(file_path)
-    
-    image_path = f"temp_{file_id}.jpg"
-    with open(image_path, "wb") as f:
-        f.write(downloaded_file.getvalue())
+    if message.photo:
+        file_id = message.photo[-1].file_id
+        file_info = await bot.get_file(file_id)
+        file_path = file_info.file_path
+        downloaded_file = await bot.download_file(file_path)
+        
+        image_path = f"temp_{file_id}.jpg"
+        with open(image_path, "wb") as f:
+            f.write(downloaded_file.getvalue())
 
-    extracted_text = await extract_text_from_image(image_path)
-    os.remove(image_path)  # टेम्प फाइल डिलीट करें
-    
-    await message.reply(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="Markdown")
+        extracted_text = await extract_text_from_image(image_path)
+        os.remove(image_path)  
+
+        await message.answer(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="Markdown")
 
 # स्टार्ट कमांड
-@dp.message_handler(commands=["start"])
+@dp.message(commands=["start"])
 async def start_command(message: types.Message):
-    await message.reply("👋 नमस्ते! मैं एक OCR बॉट हूँ। बस कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
+    await message.answer("👋 नमस्ते! मैं एक OCR बॉट हूँ। कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
 
-# बॉट रन करें
+# बॉट रन करने का फंक्शन
+async def main():
+    await dp.start_polling(bot)
+
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
