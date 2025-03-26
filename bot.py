@@ -8,7 +8,6 @@ from PIL import Image
 from fastapi import FastAPI
 import uvicorn
 
-# ✅ Tesseract का सही पथ सेट करना
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 # ✅ लॉगिंग सेटअप
