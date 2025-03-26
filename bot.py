@@ -1,22 +1,29 @@
-#@Safaridev
+# @Safaridev
+import os
 import logging
 import asyncio
 import pytesseract
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import ContentType
-from aiogram.filters import Command
+from pyrogram import Client, filters
+from pyrogram.types import Message
 from PIL import Image
 import os
-BOT_TOKEN = "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q"
+from fastapi import FastAPI
+import uvicorn
 
-# लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO)
 
-# बॉट और डिस्पैचर इनिशियलाइज़ करें
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+API_ID = int(os.getenv("API_ID", "15561124"))
+API_HASH = os.getenv("API_HASH", "277b0bfae263554a5211e856d389b9d8") 
+BOT_TOKEN = os.getenv("BOT_TOKEN", "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q")
 
-# फोटो से टेक्स्ट निकालने का फ़ंक्शन
+bot = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+app = FastAPI()
+
+@app.get("/")
+async def health_check():
+    return {"status": "running"}
+
 async def extract_text_from_image(image_path):
     try:
         img = Image.open(image_path)
@@ -25,32 +32,20 @@ async def extract_text_from_image(image_path):
     except Exception as e:
         return f"त्रुटि हुई: {str(e)}"
 
-# जब यूजर फोटो भेजे
-@dp.message()
-async def handle_photo(message: types.Message):
-    if message.photo:
-        file_id = message.photo[-1].file_id
-        file_info = await bot.get_file(file_id)
-        file_path = file_info.file_path
-        downloaded_file = await bot.download_file(file_path)
-        
-        image_path = f"temp_{file_id}.jpg"
-        with open(image_path, "wb") as f:
-            f.write(downloaded_file.getvalue())
+@bot.on_message(filters.photo)
+async def handle_photo(client, message: Message):
+    file_path = await message.download()
+    extracted_text = await extract_text_from_image(file_path)
+    os.remove(file_path)  
+    await message.reply_text(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="markdown")
 
-        extracted_text = await extract_text_from_image(image_path)
-        os.remove(image_path)  
+@bot.on_message(filters.command("start"))
+async def start_command(client, message: Message):
+    await message.reply_text("👋 नमस्ते! मैं एक OCR बॉट हूँ। कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
 
-        await message.answer(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="Markdown")
-
-# स्टार्ट कमांड (Fixed ✅)
-@dp.message(Command("start"))
-async def start_command(message: types.Message):
-    await message.answer("👋 नमस्ते! मैं एक OCR बॉट हूँ। कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
-
-# बॉट रन करने का फंक्शन
 async def main():
-    await dp.start_polling(bot)
+    await bot.start()
+    uvicorn.run(app, host="0.0.0.0", port=8080)
 
 if __name__ == "__main__":
     asyncio.run(main())
