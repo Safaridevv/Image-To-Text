@@ -1,8 +1,5 @@
-#pyrofork==2.3.43
-pyrogram
-tgcrypto
 pytesseract
-pillow
+pyrogram
 fastapi
 uvicorn
-tesseract-ocr
+pillow
