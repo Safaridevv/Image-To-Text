@@ -1,4 +1,5 @@
-pyrofork==2.3.43
+#pyrofork==2.3.43
+pyrogram
 tgcrypto
 pytesseract
 pillow
