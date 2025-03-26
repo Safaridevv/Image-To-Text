@@ -1,4 +1,3 @@
-# @Safaridev
 import os
 import logging
 import asyncio
@@ -8,6 +7,9 @@ from pyrogram.types import Message
 from PIL import Image
 from fastapi import FastAPI
 import uvicorn
+
+# ✅ Tesseract का सही पथ सेट करना
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 # ✅ लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +25,7 @@ bot = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 # ✅ FastAPI app
 app = FastAPI()
 
-# ✅ हेल्थ चेक API (Koyeb के लिए जरूरी)
+# ✅ हेल्थ चेक API
 @app.get("/")
 async def health_check():
     return {"status": "running"}
@@ -58,19 +60,16 @@ async def start_command(client, message: Message):
 
 # ✅ Pyrogram और FastAPI को सही से एक साथ रन करने का तरीका
 async def start_services():
-    # बॉट स्टार्ट करो
     await bot.start()
     logging.info("✅ Bot started successfully!")
 
-    # FastAPI स्टार्ट करो
     config = uvicorn.Config(app, host="0.0.0.0", port=8080, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
 
-    # बॉट स्टॉप करो
     await bot.stop()
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.create_task(start_services())  # ✅ बॉट और FastAPI को एक साथ चलाओ
+    loop.create_task(start_services())
     loop.run_forever()
