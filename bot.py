@@ -5,11 +5,11 @@ from aiogram.types import ContentType
 from aiogram.utils import executor
 from PIL import Image
 import os
-from config import BOT_TOKEN
+#from config import BOT_TOKEN
 
 # लॉगिंग सेटअप
 logging.basicConfig(level=logging.INFO)
-BOT_TOKEN = ""
+BOT_TOKEN = "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q"
 # बॉट और डिस्पैचर इनिशियलाइज़ करें
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
