@@ -4,6 +4,7 @@ import asyncio
 import pytesseract
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ContentType
+from aiogram.filters import Command
 from PIL import Image
 import os
 BOT_TOKEN = "7140468132:AAF302Ux7AqKEr5yHVl0CLre6MfEIXUMB0Q"
@@ -42,8 +43,8 @@ async def handle_photo(message: types.Message):
 
         await message.answer(f"📜 **निकाला गया टेक्स्ट:**\n\n```{extracted_text}```", parse_mode="Markdown")
 
-# स्टार्ट कमांड
-@dp.message(command("start"))
+# स्टार्ट कमांड (Fixed ✅)
+@dp.message(Command("start"))
 async def start_command(message: types.Message):
     await message.answer("👋 नमस्ते! मैं एक OCR बॉट हूँ। कोई भी फोटो भेजो, और मैं उसमें से टेक्स्ट निकालकर वापस भेज दूँगा।")
 
