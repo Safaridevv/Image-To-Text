@@ -1,4 +1,5 @@
-aiogram
+pyrogram
+tgcrypto
 pytesseract
 pillow
 fastapi
