@@ -56,13 +56,21 @@ async def handle_photo(client, message: Message):
 async def start_command(client, message: Message):
     await message.reply_text("👋 **नमस्ते!**\n\nमैं एक **OCR बॉट** हूँ। कोई भी **फोटो भेजो**, और मैं उसमें से **टेक्स्ट** निकालकर वापस भेज दूँगा।")
 
-# ✅ Pyrogram और FastAPI को Async तरीके से रन करने का सही तरीका
-async def main():
+# ✅ Pyrogram और FastAPI को सही से एक साथ रन करने का तरीका
+async def start_services():
+    # बॉट स्टार्ट करो
     await bot.start()
+    logging.info("✅ Bot started successfully!")
+
+    # FastAPI स्टार्ट करो
     config = uvicorn.Config(app, host="0.0.0.0", port=8080, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
+
+    # बॉट स्टॉप करो
     await bot.stop()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    loop.create_task(start_services())  # ✅ बॉट और FastAPI को एक साथ चलाओ
+    loop.run_forever()
