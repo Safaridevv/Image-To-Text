@@ -25,8 +25,7 @@ bot = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 app = FastAPI()
 
 # ✅ EasyOCR लोड करना
-reader = easyocr.Reader(['hi', 'en'])  # हिंदी और इंग्लिश सपोर्ट
-
+reader = easyocr.Reader(['hi', 'en'], gpu=False, download_enabled=False)
 # ✅ हेल्थ चेक API (Koyeb सर्वर के लिए)
 @app.get("/")
 async def health_check():
