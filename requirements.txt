@@ -3,6 +3,4 @@ tgcrypto
 fastapi
 uvicorn
 easyocr
-torch
-numpy
 Pillow
