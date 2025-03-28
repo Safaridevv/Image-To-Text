@@ -1,5 +1,8 @@
-pytesseract
 pyrogram
+tgcrypto
 fastapi
 uvicorn
-pillow
+easyocr
+torch
+numpy
+Pillow
